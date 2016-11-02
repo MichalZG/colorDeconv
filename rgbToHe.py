@@ -7,9 +7,10 @@ from scipy import linalg
 import glob
 from skimage.util import dtype
 from skimage.exposure import rescale_intensity
-from skimage import img_as_uint
+from skimage import img_as_ubyte
 from multiprocessing import Pool
 import os
+import sys
 
 warnings.filterwarnings('ignore')
 M2 = np.array([[0.49, 0.760, 0.41],
@@ -35,17 +36,19 @@ def makeDeconv(image):
 
 def saveNewFile(new_file_data, name):
     new_file_data = rescale_intensity(new_file_data[:, :, 0], out_range=(0, 1))
-    new_file_data = img_as_uint(new_file_data)
-    io.imsave(os.path.join(cur_path, 'hed', name), new_file_data)
+    new_file_data = img_as_ubyte(new_file_data)
+    io.imsave(os.path.join(save_dir, name), new_file_data)
 
 
 if __name__ == '__main__':
-
+    
+    save_dir = sys.argv[1]
     cur_path = os.getcwd()
+
     images = sorted(glob.glob(os.path.join(cur_path, '*.png')))
 
     try:
-        os.mkdir('hed')
+        os.mkdir(save_dir)
     except OSError:
         pass
 
