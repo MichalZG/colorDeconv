@@ -10,7 +10,7 @@ from skimage.exposure import rescale_intensity
 from skimage import img_as_ubyte
 from multiprocessing import Pool
 import os
-import sys
+import argparse
 
 warnings.filterwarnings('ignore')
 M2 = np.array([[0.49, 0.760, 0.41],
@@ -30,27 +30,52 @@ def makeDeconv(image):
     rgb = dtype.img_as_float(file_data, force_copy=True)
     rgb += 2
     stains = np.dot(np.reshape(-np.log(rgb), (-1, 3)), D)
-
     saveNewFile(np.reshape(stains, rgb.shape), os.path.basename(image))
 
 
 def saveNewFile(new_file_data, name):
-    new_file_data = rescale_intensity(new_file_data[:, :, 0], out_range=(0, 1))
-    new_file_data = img_as_ubyte(new_file_data)
-    io.imsave(os.path.join(save_dir, name), new_file_data)
+
+    if args.channel == 'e':
+        new_data = rescale_intensity(new_file_data[:, :, 0], out_range=(0, 1))
+    elif args.channel == 'h':
+        new_data = rescale_intensity(new_file_data[:, :, 1], out_range=(0, 1))
+    elif args.channel == 'eh':
+        e = rescale_intensity(new_file_data[:, :, 0], out_range=(0, 1))
+        h = rescale_intensity(new_file_data[:, :, 1], out_range=(0, 1))
+        new_data = np.dstack((np.zeros_like(e), e, h))
+
+    new_data = img_as_ubyte(new_data)
+
+    io.imsave(os.path.join(args.output, name), new_data)
 
 
 if __name__ == '__main__':
-    
-    save_dir = sys.argv[1]
+
     cur_path = os.getcwd()
 
-    images = sorted(glob.glob(os.path.join(cur_path, '*.png')))
+    parser = argparse.ArgumentParser(description="color deconvolution")
+
+    parser.add_argument('-c', '--channel', type=str, choices=['e', 'h', 'eh'],
+                        nargs='?', default='e', help='channel for save: '
+                                                     'e - eosin, '
+                                                     'h - hematoxylin, '
+                                                     'eh - e + h. '
+                                                     'Default: %(default)s')
+    parser.add_argument('-r', '--regexp', type=str, nargs='?', default='*.png',
+                        help='regulas expression for images name. '
+                             'Default: %(default)s')
+    parser.add_argument('-o', '--output', type=str,
+                        nargs='?', default=os.path.join(
+                            cur_path, 'output'), help='output dir. '
+                                                      'Default: %(default)s')
+    args = parser.parse_args()
+
+    images = sorted(glob.glob(os.path.join(cur_path, args.regexp)))
 
     try:
-        os.mkdir(save_dir)
+        os.mkdir(args.output)
     except OSError:
         pass
 
-    p = Pool(1)
+    p = Pool(2)
     p.map(makeDeconv, images)
