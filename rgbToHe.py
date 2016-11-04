@@ -45,7 +45,7 @@ def saveNewFile(new_file_data, name):
         new_data = np.dstack((np.zeros_like(e), e, h))
 
     new_data = img_as_ubyte(new_data)
-
+    
     io.imsave(os.path.join(args.output, name), new_data)
 
 
@@ -71,9 +71,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     images = sorted(glob.glob(os.path.join(cur_path, args.regexp)))
-
+    
     try:
-        os.mkdir(args.output)
+        os.makedirs(args.output)
     except OSError:
         pass
 
