@@ -48,11 +48,11 @@ def saveNewFile(new_file_data, name):
         new_data = rescale_intensity(new_file_data[:, :, 0], out_range=(0, 1))
     elif args.channel == 'e':
         new_data = rescale_intensity(new_file_data[:, :, 1], out_range=(0, 1))
-    elif args.channel == 'ehd':
+    elif args.channel == 'hed':
         h = rescale_intensity(new_file_data[:, :, 0], out_range=(0, 1))
         e = rescale_intensity(new_file_data[:, :, 1], out_range=(0, 1))
         d = rescale_intensity(new_file_data[:, :, 2], out_range=(0, 1))
-        new_data = np.dstack(h, e, d)
+        new_data = np.dstack((h, e, d))
 
     new_data = img_as_ubyte(new_data)
     
@@ -69,7 +69,7 @@ if __name__ == '__main__':
                         nargs='?', default='h', help='channel for save: '
                                                      'h: hematoxylin, '
                                                      'e: eosin, '
-                                                     'he: h + e. '
+                                                     'hed: h + e + dab. '
                                                      'Default: %(default)s')
     parser.add_argument('-r', '--regexp', type=str, nargs='?', default='*.png',
                         help='regulas expression for images name. '
