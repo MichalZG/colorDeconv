@@ -13,9 +13,19 @@ import os
 import argparse
 
 warnings.filterwarnings('ignore')
+
+
+# H&E
+M2 = np.array([[0.6443186, 0.7166757, 0.26688856],
+               [0.09283128, 0.9545457, 0.28324],
+               [0.63595444, 0.001, 0.7717266]])
+"""
+# H&E2
 M2 = np.array([[0.49, 0.760, 0.41],
                [0.046, 0.84, 0.54],
                [0.76, 0.001, 0.64]])
+"""
+
 
 D = linalg.inv(M2)
 
@@ -34,15 +44,15 @@ def makeDeconv(image):
 
 
 def saveNewFile(new_file_data, name):
-
-    if args.channel == 'e':
+    if args.channel == 'h':
         new_data = rescale_intensity(new_file_data[:, :, 0], out_range=(0, 1))
-    elif args.channel == 'h':
+    elif args.channel == 'e':
         new_data = rescale_intensity(new_file_data[:, :, 1], out_range=(0, 1))
-    elif args.channel == 'eh':
-        e = rescale_intensity(new_file_data[:, :, 0], out_range=(0, 1))
-        h = rescale_intensity(new_file_data[:, :, 1], out_range=(0, 1))
-        new_data = np.dstack((np.zeros_like(e), e, h))
+    elif args.channel == 'ehd':
+        h = rescale_intensity(new_file_data[:, :, 0], out_range=(0, 1))
+        e = rescale_intensity(new_file_data[:, :, 1], out_range=(0, 1))
+        d = rescale_intensity(new_file_data[:, :, 2], out_range=(0, 1))
+        new_data = np.dstack(h, e, d)
 
     new_data = img_as_ubyte(new_data)
     
@@ -55,11 +65,11 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="color deconvolution")
 
-    parser.add_argument('-c', '--channel', type=str, choices=['e', 'h', 'eh'],
-                        nargs='?', default='e', help='channel for save: '
-                                                     'e - eosin, '
-                                                     'h - hematoxylin, '
-                                                     'eh - e + h. '
+    parser.add_argument('-c', '--channel', type=str, choices=['h', 'e', 'hed'],
+                        nargs='?', default='h', help='channel for save: '
+                                                     'h: hematoxylin, '
+                                                     'e: eosin, '
+                                                     'he: h + e. '
                                                      'Default: %(default)s')
     parser.add_argument('-r', '--regexp', type=str, nargs='?', default='*.png',
                         help='regulas expression for images name. '
@@ -77,5 +87,5 @@ if __name__ == '__main__':
     except OSError:
         pass
 
-    p = Pool(2)
+    p = Pool(7)
     p.map(makeDeconv, images)
