@@ -48,6 +48,8 @@ def saveNewFile(new_file_data, name):
         new_data = rescale_intensity(new_file_data[:, :, 0], out_range=(0, 1))
     elif args.channel == 'e':
         new_data = rescale_intensity(new_file_data[:, :, 1], out_range=(0, 1))
+    elif args.channel == 'd':
+        new_data = rescale_intensity(new_file_data[:, :, 2], out_range=(0, 1))
     elif args.channel == 'hed':
         h = rescale_intensity(new_file_data[:, :, 0], out_range=(0, 1))
         e = rescale_intensity(new_file_data[:, :, 1], out_range=(0, 1))
@@ -65,10 +67,11 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="color deconvolution")
 
-    parser.add_argument('-c', '--channel', type=str, choices=['h', 'e', 'hed'],
+    parser.add_argument('-c', '--channel', type=str, choices=['h', 'e', 'd', 'hed'],
                         nargs='?', default='h', help='channel for save: '
                                                      'h: hematoxylin, '
                                                      'e: eosin, '
+                                                     'd: dab, '
                                                      'hed: h + e + dab. '
                                                      'Default: %(default)s')
     parser.add_argument('-r', '--regexp', type=str, nargs='?', default='*.png',
