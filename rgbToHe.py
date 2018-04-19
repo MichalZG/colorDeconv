@@ -14,11 +14,11 @@ import cv2
 import argparse
 
 try:
-  import cv2.io.imread as imread
-  import cv2.io.imwrite as imsave
+  from cv2 import io.imread as imread
+  from cv2 import io.imwrite as imsave
 except ImportError:
-  import skimage.io.imread as imread
-  import skimage.io.imsave as imsave
+  from skimage import io.imread as imread
+  from skimage import io.imsave as imsave
 
 warnings.filterwarnings('ignore')
 
