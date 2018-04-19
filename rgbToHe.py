@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import warnings
-from skimage import io
 import numpy as np
 from scipy import linalg
 import glob
@@ -10,7 +9,6 @@ from skimage.exposure import rescale_intensity
 from skimage import img_as_ubyte
 from multiprocessing import Pool
 import os
-import cv2
 import argparse
 
 try:
@@ -39,7 +37,7 @@ D = linalg.inv(M2)
 
 
 def loadData(file_name):
-    file_data = io.imread(file_name)
+    file_data = imread(file_name)
     return file_data
 
 
@@ -66,7 +64,7 @@ def saveNewFile(new_file_data, name):
 
     new_data = img_as_ubyte(new_data)
     
-    io.imsave(os.path.join(args.output, name), new_data)
+    imsave(os.path.join(args.output, name), new_data)
 
 
 if __name__ == '__main__':
