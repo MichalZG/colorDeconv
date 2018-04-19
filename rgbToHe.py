@@ -10,7 +10,13 @@ from skimage.exposure import rescale_intensity
 from skimage import img_as_ubyte
 from multiprocessing import Pool
 import os
+import cv2
 import argparse
+
+try:
+  import cv2 as io
+except ImportError:
+  from skimage import io
 
 warnings.filterwarnings('ignore')
 
