@@ -17,8 +17,8 @@ try:
   import cv2.io.imread as imread
   import cv2.io.imwrite as imsave
 except ImportError:
-  from skimage.io.imread as imread
-  from skimage.io.imsave as imsave
+  import skimage.io.imread as imread
+  import skimage.io.imsave as imsave
 
 warnings.filterwarnings('ignore')
 
